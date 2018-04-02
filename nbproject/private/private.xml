@@ -4,8 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/DbObjRow.php</file>
-            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/index.php</file>
             <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/IDbObj.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/index.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/DbTypeValue.php</file>
             <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/DbObj.php</file>
             <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/DbConnection.php</file>
             <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/Db.php</file>
