@@ -3,14 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/Database/IDbObjInstance.php</file>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/Database/Db.php</file>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/index.php</file>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/Database/DbConnection.php</file>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/Database/DbObjInstance.php</file>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/config.php</file>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/Database/DbObj.php</file>
-            <file>file:/D:/xampp/htdocs/K3ksPHP/Database/IDbObj.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/DbObjRow.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/index.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/IDbObj.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/DbObj.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/DbConnection.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/Db.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/config.php</file>
+            <file>file:/H:/@Neuinstall/@GitHub/K3ksPHP/Database/IDbObjRow.php</file>
         </group>
     </open-files>
 </project-private>

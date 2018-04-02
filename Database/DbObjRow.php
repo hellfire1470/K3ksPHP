@@ -26,7 +26,7 @@
 
 namespace K3ksPHP\Database {
 
-    class DbObjInstance implements IDbObjInstance {
+    class DbObjRow implements IDbObjRow {
 
         private $_attr;
         private $_meta;
@@ -37,11 +37,11 @@ namespace K3ksPHP\Database {
         }
 
         public function Create() {
-            
+
         }
 
         public function Delete() {
-            
+
         }
 
         public function GetAttr($attr) {
@@ -56,7 +56,7 @@ namespace K3ksPHP\Database {
         }
 
         public function GetMeta($meta = null) {
-            
+
         }
 
         public function HasAttr($attr) {
@@ -64,27 +64,27 @@ namespace K3ksPHP\Database {
         }
 
         public function HasMeta($meta) {
-            
+
         }
 
         public function IsLoaded() {
-            
+
         }
 
         public function RemoveMeta($meta) {
-            
+
         }
 
         public function Save() {
-            
+
         }
 
         public function SetAttr($attr, $value = null) {
-            
+
         }
 
         public function SetMeta($meta, $value = null) {
-            
+
         }
 
     }

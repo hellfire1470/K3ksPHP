@@ -32,6 +32,8 @@ namespace K3ksPHP\Database {
 
         public function LoadAllByTag($tag, $value);
 
+        public function LoadAllByColumn($column, $key);
+
         public function LoadByID($value);
 
         public function LoadByTag($tag, $value);
@@ -41,6 +43,8 @@ namespace K3ksPHP\Database {
         public function LoadByMetaKey($key);
 
         public function Create();
+
+        public function Set($arr);
     }
 
 }

@@ -41,30 +41,49 @@ namespace K3ksPHP\Database {
                 throw new Exception("Error in " . static::$TAG . ": you have to use an unique table name");
             }
             $this->_tableName = $table_name;
-            $this->_fieldId = $field_id;
-            $this->_fields = $fields;
+            $this->_fieldId   = $field_id;
+            $this->_fields    = $fields;
+        }
+
+        public function GetFieldId() {
+            return $this->_fieldId;
         }
 
         /**
-         * 
+         *
          * @param String $filter Exmple: "x = ? and y = ?"
-         * @param Array $params Key is the type (s = string, i = integer, d = double, b = blob). 
-         * Value is value. Example: ['s' => 'value', 'i' => 10]
-         * @return Array Array of DbObjInstance types 
+         * @param Array $params of parameters
+         * @return Array Array of DbObjInstance types
          */
         public function LoadAll($filter = null, $params = []) {
-            $sql = "select " . join(",", $this->_fields) . " from ".$this->_tableName;
-            
-            if(!is_null($filter)){
-                $sql .= " where ". $filter;
+            // TOOD: JOIN ALL PARAMS
+
+            if (!is_array($params)) {
+                $params = [$params];
             }
-            
-            $results = DbConnection::ExecuteSQL($sql, $params);
-            return $this->_DataToInstances($results);
+
+            $sql = "select " . join(",", $this->_fields) . " from " . $this->_tableName;
+
+            if (!is_null($filter)) {
+                $sql .= " where " . $filter;
+            }
+            $dbParams = [];
+            foreach ($params as $param) {
+                $dbParams[] = new DbTypeValue($param);
+            }
+
+            $results = DbConnection::ExecuteSQL($sql, $dbParams);
+            return $this->_DataToRow($results);
         }
 
         public function LoadAllByTag($tag, $value) {
-            return $this->LoadAll($tag." = ?", ['s' => $value]);
+            $_tag = DbConnection::GetConnection()->real_escape_string($tag);
+            return $this->LoadAll($_tag . " = ?", $value);
+        }
+
+        public function LoadAllByColumn($column, $key) {
+            $col = DbConnection::GetConnection()->real_escape_string($column);
+            return $this->LoadAll($col . " = ?", $key);
         }
 
         public function LoadByID($value) {
@@ -72,42 +91,64 @@ namespace K3ksPHP\Database {
         }
 
         public function LoadByMetaKey($key) {
-            
+
         }
 
         public function LoadByTag($tag, $value) {
-            
+
         }
 
         public function LoadByTags($keys) {
-            
+
         }
-        
+
         public function Create() {
-            
+
         }
 
         private function _FieldsToAttributes($data) {
 
             $attr = [];
-            
+
             foreach ($this->_fields as $field) {
                 $attr[$field] = $data[$field];
             }
-            
+
             return $attr;
         }
 
-        private function _DataToInstances($data){
+        private function _DataToRow($data) {
             $instances = [];
-            
-            foreach($data as $singleRow){
-                $instance = new DbObjInstance($this->_FieldsToAttributes($singleRow));
+
+            foreach ($data as $singleRow) {
+                $instance = new DbObjRow($this->_FieldsToAttributes($singleRow));
                 array_push($instances, $instance);
             }
-            
+
             return $instances;
         }
+
+        /*
+         * @param $arr: array key => value | example: array('key' => 'value')
+         *
+         */
+
+        public function Set($arr) {
+
+            $keys   = [];
+            $values = [];
+            $args   = [];
+            foreach ($arr as $key => $value) {
+                $keys[]   = $key;
+                $values[] = new DbTypeValue($value);
+                $args[]   = '?';
+            }
+
+            $sql = "replace into " . $this->_tableName . " (" . join(',', $keys) . ") values( " . join(',', $args) . " )";
+
+            DbConnection::ExecuteSQL($sql, $values);
+        }
+
     }
 
 }

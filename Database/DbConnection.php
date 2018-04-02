@@ -34,19 +34,21 @@ namespace K3ksPHP\Database {
     class DbConnection {
 
         private static $_sConnection;
-        
+
         /**
          * Returned eine bestehende MySQL-Verbindung
          * @return (mysqli)Connection
          */
         public static function GetConnection() {
-            if(is_null(self::$_sConnection)){
+            if (is_null(self::$_sConnection)) {
                 self::_sInitialize();
             }
-            return self::$_sConnection;
+            if (self::$_sConnection instanceof \mysqli) {
+                return self::$_sConnection;
+            }
+            throw new Exception("Failed to connect to mysql");
         }
 
-        
         private static function _sInitialize() {
             register_shutdown_function('K3ksPHP\Database\DbConnection::sDisconnect');
 
@@ -56,7 +58,7 @@ namespace K3ksPHP\Database {
                 throw new Exception('Failed to connect to MySQL: (' . self::$_sConnection->connect_errno . ') ' . self::$_sConnection->connect_error);
             }
         }
-        
+
         /**
          * Beendet die Verbindung zum MySQL Server
          */
@@ -67,34 +69,52 @@ namespace K3ksPHP\Database {
         }
 
         /**
-         * 
+         *
          * @param String $sql is the SQL statement. use ? instead of parameter. Example: "select * from TABLE where x = ?"
-         * @param Array $params Key is the type (s = string, i = integer, d = double, b = blob). 
-         * Value is value. Example: ['s' => 'value']
+         * @param Array $params Key is the type (s = string, i = integer, d = double, b = blob).
+         * Value is value. Example: array of type DbTypeValue
          * @return Array Results of statement
          */
-        static function ExecuteSQL($sql, $params = []){
+        static function ExecuteSQL($sql, $params = []) {
             $conn = self::GetConnection();
-            
+
             $stmt = $conn->prepare($sql);
-                        
-            foreach($params as $key => $value){
-                $stmt->bind_param($key, $value);
+
+
+            if (!empty($conn->error))
+                echo $conn->error;
+
+            $types  = [];
+            $values = [];
+
+            foreach ($params as $typeValue) {
+                if (!$typeValue instanceof DbTypeValue) {
+                    throw new \Exception('Parameter has to be TypeOf DbTypeValue');
+                }
+                $types[]  = $typeValue->GetType();
+                $values[] = $typeValue->GetValue();
             }
-            
+
+            if (sizeof($params) > 0) {
+                $stmt->bind_param(join('', $types), ...$values);
+            }
+
             $stmt->execute();
-            
-            $result = $stmt->get_result();
+
+            $result  = $stmt->get_result();
             $results = [];
-            
-            while ($myrow = $result->fetch_assoc()) {
-                array_push($results, $myrow);
+            if (!is_bool($result)) {
+                while ($myrow = $result->fetch_assoc()) {
+                    array_push($results, $myrow);
+                }
+
+                $result->free();
+
+                return $results;
             }
-            
-            $result->free();
-            
-            return $results;
+            return $result;
         }
+
     }
 
 }

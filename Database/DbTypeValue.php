@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Alexander.
+ * Copyright 2018 Alexander.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,41 @@
  * THE SOFTWARE.
  */
 
-require_once __DIR__ . "/DbTypeValue.php";
-require_once __DIR__ . "/DbConnection.php";
-require_once __DIR__ . "/IDbObj.php";
-require_once __DIR__ . "/DbObj.php";
-require_once __DIR__ . "/IDbObjRow.php";
-require_once __DIR__ . "/DbObjRow.php";
+namespace K3ksPHP\Database;
+
+/**
+ * Description of DBKeyValue
+ *
+ * @author Alexander
+ */
+class DbTypeValue {
+
+    private $_type;
+    private $_value;
+
+    //put your code here
+    public function __construct($value, $type = null) {
+        if ($type != null) {
+            $this->_type = $type;
+        } else {
+            // TODO: detect blobs
+            if (is_integer($value)) {
+                $this->_type = 'i';
+            } else if (is_double($value)) {
+                $this->_type = 'd';
+            } else {
+                $this->_type = 's';
+            }
+        }
+        $this->_value = $value;
+    }
+
+    public function GetType() {
+        return $this->_type;
+    }
+
+    public function GetValue() {
+        return $this->_value;
+    }
+
+}

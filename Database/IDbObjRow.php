@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 Alexander.
@@ -25,19 +25,30 @@
  */
 
 namespace K3ksPHP\Database {
-interface IDbObjInstance{
+
+    interface IDbObjRow {
+
         public function HasMeta($meta);
+
         public function GetMeta($meta = null);
+
         public function SetMeta($meta, $value = null);
+
         public function RemoveMeta($meta);
 
         public function HasAttr($attr);
+
         public function GetAttr($attr);
+
         public function GetAttrs();
+
         public function SetAttr($attr, $value = null);
-        
+
         public function IsLoaded();
+
         public function Save();
+
         public function Delete();
-}
+    }
+
 }
