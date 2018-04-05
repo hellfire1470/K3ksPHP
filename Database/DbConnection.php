@@ -71,18 +71,13 @@ namespace K3ksPHP\Database {
         /**
          *
          * @param String $sql is the SQL statement. use ? instead of parameter. Example: "select * from TABLE where x = ?"
-         * @param Array $params Key is the type (s = string, i = integer, d = double, b = blob).
-         * Value is value. Example: array of type DbTypeValue
+         * @param Array $params of type DbTypeValue
          * @return Array Results of statement
          */
         static function ExecuteSQL($sql, $params = []) {
             $conn = self::GetConnection();
 
             $stmt = $conn->prepare($sql);
-
-
-            if (!empty($conn->error))
-                echo $conn->error;
 
             $types  = [];
             $values = [];
@@ -101,18 +96,22 @@ namespace K3ksPHP\Database {
 
             $stmt->execute();
 
-            $result  = $stmt->get_result();
+            $result = $stmt->get_result();
+            return self::_GetResults($result);
+        }
+
+        private static function _GetResults($stmt_result) {
             $results = [];
-            if (!is_bool($result)) {
-                while ($myrow = $result->fetch_assoc()) {
+            if (!is_bool($stmt_result)) {
+                while ($myrow = $stmt_result->fetch_assoc()) {
                     array_push($results, $myrow);
                 }
 
-                $result->free();
+                $stmt_result->free();
 
                 return $results;
             }
-            return $result;
+            return $stmt_result;
         }
 
     }

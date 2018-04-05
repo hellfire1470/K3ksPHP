@@ -26,67 +26,29 @@
 
 namespace K3ksPHP\Database {
 
-    class DbObjRow implements IDbObjRow {
+    interface IDbRow {
 
-        private $_attr;
-        private $_meta;
+        public function HasMeta($meta);
 
-        public function __construct($attr, $meta = null) {
-            $this->_attr = $attr;
-            $this->_meta = $meta;
-        }
+        public function GetMeta($meta = null);
 
-        public function Create() {
+        public function SetMeta($meta, $value = null);
 
-        }
+        public function RemoveMeta($meta);
 
-        public function Delete() {
+        public function HasAttr($attr);
 
-        }
+        public function GetAttr($attr);
 
-        public function GetAttr($attr) {
-            if ($this->HasAttr($attr)) {
-                return $this->_attr[$attr];
-            }
-            return null;
-        }
+        public function GetAttrs();
 
-        public function GetAttrs() {
-            return $this->_attr;
-        }
+        public function SetAttr($attr, $value = null);
 
-        public function GetMeta($meta = null) {
+        public function IsLoaded();
 
-        }
+        public function Save();
 
-        public function HasAttr($attr) {
-            return array_key_exists($attr, $this->_attr);
-        }
-
-        public function HasMeta($meta) {
-
-        }
-
-        public function IsLoaded() {
-
-        }
-
-        public function RemoveMeta($meta) {
-
-        }
-
-        public function Save() {
-
-        }
-
-        public function SetAttr($attr, $value = null) {
-
-        }
-
-        public function SetMeta($meta, $value = null) {
-
-        }
-
+        public function Delete();
     }
 
 }

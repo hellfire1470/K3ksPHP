@@ -26,7 +26,7 @@
 
 namespace K3ksPHP\Database {
 
-    interface IDbObj {
+    interface IDbTable {
 
         public function LoadAll($filter);
 
@@ -44,7 +44,7 @@ namespace K3ksPHP\Database {
 
         public function Create();
 
-        public function Set($arr);
+        public function Set($key_value);
     }
 
 }

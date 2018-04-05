@@ -26,27 +26,40 @@
 
 namespace K3ksPHP\Database {
 
-    class DBObj implements IDbObj {
+    require_once __DIR__ . "/IDbTable.php";
+    require_once __DIR__ . "/DbField.php";
+
+    class DbTable implements IDbTable {
 
         private static $TAG = "DBObj";
         private $_tableName;
-        private $_fieldId;
         private $_fields;
 
-        public function __construct($table_name, $field_id, $fields = null) {
-            if (empty($field_id)) {
-                throw new Exception("Error in " . static::$TAG . ": you have to use an unique id for your table");
-            }
+        /**
+         *
+         * @param String table_name Name of the table
+         * @param String field_id Name of Primary Key
+         * @return Array of DbFields
+         */
+        public function __construct($table_name, $fields) {
             if (empty($table_name)) {
                 throw new Exception("Error in " . static::$TAG . ": you have to use an unique table name");
             }
+            if (empty($fields)) {
+                throw new Exception("Error in " . static::$TAG . ": fields are empty");
+            }
             $this->_tableName = $table_name;
-            $this->_fieldId   = $field_id;
             $this->_fields    = $fields;
         }
 
-        public function GetFieldId() {
-            return $this->_fieldId;
+        private function _JoinFields($seperator, $withTypes = false) {
+            $joined = '';
+            foreach ($this->_fields as $field) {
+                if ($field instanceof DbField) {
+                    $joined .= $field->GetName() . ' ' . ($withTypes ? $field->GetFieldCreate() : '') . $seperator;
+                }
+            }
+            return substr($joined, 0, strlen($joined) - 1);
         }
 
         /**
@@ -62,7 +75,7 @@ namespace K3ksPHP\Database {
                 $params = [$params];
             }
 
-            $sql = "select " . join(",", $this->_fields) . " from " . $this->_tableName;
+            $sql = "select " . $this->_JoinFields(',') . " from " . $this->_tableName;
 
             if (!is_null($filter)) {
                 $sql .= " where " . $filter;
@@ -102,26 +115,31 @@ namespace K3ksPHP\Database {
 
         }
 
-        public function Create() {
-
+        private function _GetPrimaryKeys() {
+            $pks = '';
+            foreach ($this->_fields as $field) {
+                if ($field->HasAttr(DbFieldAttribute::PRIMARY_KEY)) {
+                    $pks .= $field->GetName() . ',';
+                }
+            }
+            return substr($pks, 0, strlen($pks) - 1);
         }
 
-        private function _FieldsToAttributes($data) {
+        public function Create() {
+            $sql = 'create table if not exists ' . $this->_tableName . '(' . $this->_JoinFields(',', true) . ')';
+            DbConnection::ExecuteSQL($sql);
 
-            $attr = [];
-
-            foreach ($this->_fields as $field) {
-                $attr[$field] = $data[$field];
+            $pks = $this->_GetPrimaryKeys();
+            if (strlen($pks) > 0) {
+                DbConnection::ExecuteSQL('ALTER TABLE ' . $this->_tableName . ' ADD PRIMARY KEY(' . $pks . ')');
             }
-
-            return $attr;
         }
 
         private function _DataToRow($data) {
             $instances = [];
 
             foreach ($data as $singleRow) {
-                $instance = new DbObjRow($this->_FieldsToAttributes($singleRow));
+                $instance = new DbRow($singleRow);
                 array_push($instances, $instance);
             }
 
@@ -129,24 +147,26 @@ namespace K3ksPHP\Database {
         }
 
         /*
-         * @param $arr: array key => value | example: array('key' => 'value')
+         * @param $key_value: array() of DbKeyValue
          *
          */
 
-        public function Set($arr) {
+        public function Set($key_values) {
 
-            $keys   = [];
-            $values = [];
-            $args   = [];
-            foreach ($arr as $key => $value) {
-                $keys[]   = $key;
-                $values[] = new DbTypeValue($value);
-                $args[]   = '?';
+            if (!is_array($key_values)) {
+                $key_values = [$key_values];
+            }
+
+            $keys = [];
+            $args = [];
+            foreach ($key_values as $key_value) {
+                $keys[] = $key_value->GetKey();
+                $args[] = '?';
             }
 
             $sql = "replace into " . $this->_tableName . " (" . join(',', $keys) . ") values( " . join(',', $args) . " )";
 
-            DbConnection::ExecuteSQL($sql, $values);
+            DbConnection::ExecuteSQL($sql, $key_values);
         }
 
     }

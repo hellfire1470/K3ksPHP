@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Alexander.
+ * Copyright 2018 Alexander.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,26 @@
  * THE SOFTWARE.
  */
 
-require_once __DIR__ . "/DbKeyValue.php";
-require_once __DIR__ . "/DbConnection.php";
-require_once __DIR__ . "/DbTable.php";
-require_once __DIR__ . "/DbRow.php";
+namespace K3ksPHP\Database;
+
+/**
+ * Description of DbKeyValue
+ *
+ * @author Alexander
+ */
+require_once __DIR__ . '/DbTypeValue.php';
+
+class DbKeyValue extends DbTypeValue {
+
+    private $_key;
+
+    public function __construct($key, $value, $type = null) {
+        parent::__construct($value, $type);
+        $this->_key = $key;
+    }
+
+    public function GetKey() {
+        return $this->_key;
+    }
+
+}
