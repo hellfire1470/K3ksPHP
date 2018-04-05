@@ -31,9 +31,10 @@ namespace K3ksPHP\Database {
 
     class DbTable implements IDbTable {
 
-        private static $TAG = "DBObj";
+        private static $TAG    = "DBObj";
         private $_tableName;
         private $_fields;
+        private $_fieldsByName = [];
 
         /**
          *
@@ -50,6 +51,9 @@ namespace K3ksPHP\Database {
             }
             $this->_tableName = $table_name;
             $this->_fields    = $fields;
+            foreach ($fields as $field) {
+                $this->_fieldsByName[$field->GetName()] = $field;
+            }
         }
 
         private function _JoinFields($seperator, $withTypes = false) {
@@ -66,7 +70,7 @@ namespace K3ksPHP\Database {
          *
          * @param String $filter Exmple: "x = ? and y = ?"
          * @param Array $params of parameters
-         * @return Array Array of DbObjInstance types
+         * @return Array Array of DbRow types
          */
         public function LoadAll($filter = null, $params = []) {
             // TOOD: JOIN ALL PARAMS
@@ -115,24 +119,9 @@ namespace K3ksPHP\Database {
 
         }
 
-        private function _GetPrimaryKeys() {
-            $pks = '';
-            foreach ($this->_fields as $field) {
-                if ($field->HasAttr(DbFieldAttribute::PRIMARY_KEY)) {
-                    $pks .= $field->GetName() . ',';
-                }
-            }
-            return substr($pks, 0, strlen($pks) - 1);
-        }
-
         public function Create() {
             $sql = 'create table if not exists ' . $this->_tableName . '(' . $this->_JoinFields(',', true) . ')';
             DbConnection::ExecuteSQL($sql);
-
-            $pks = $this->_GetPrimaryKeys();
-            if (strlen($pks) > 0) {
-                DbConnection::ExecuteSQL('ALTER TABLE ' . $this->_tableName . ' ADD PRIMARY KEY(' . $pks . ')');
-            }
         }
 
         private function _DataToRow($data) {
@@ -144,6 +133,10 @@ namespace K3ksPHP\Database {
             }
 
             return $instances;
+        }
+
+        public function GetFieldByKey($key) {
+            return $this->_fieldsByName[$key];
         }
 
         /*
@@ -160,7 +153,8 @@ namespace K3ksPHP\Database {
             $keys = [];
             $args = [];
             foreach ($key_values as $key_value) {
-                $keys[] = $key_value->GetKey();
+                $key    = $key_value->GetKey();
+                $keys[] = $key;
                 $args[] = '?';
             }
 

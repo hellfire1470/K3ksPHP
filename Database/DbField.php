@@ -41,7 +41,7 @@ abstract class DbFieldType {
 
 abstract class DbFieldAttribute {
 
-    const UNIQUE         = 'unique';
+    const UNIQUE         = 'UNIQUE';
     const PRIMARY_KEY    = 'PRIMARY KEY';
     const AUTO_INCREMENT = 'AUTO_INCREMENT';
     const NOT_NULL       = 'NOT NULL';
@@ -68,9 +68,7 @@ class DbField {
         $createAttr = '';
         if ($this->_attributes != null) {
             foreach ($this->_attributes as $attr) {
-                if ($attr == DbFieldAttribute::AUTO_INCREMENT || $attr == DbFieldAttribute::NOT_NULL || $attr == DbFieldAttribute::UNIQUE) {
-                    $createAttr .= $attr . ' ';
-                }
+                $createAttr .= $attr . ' ';
             }
         }
         return $createAttr;
@@ -82,10 +80,6 @@ class DbField {
             $typestr .= '(' . $this->_size . ') ' . $this->_GetCreateAttributes();
         }
         return $typestr;
-    }
-
-    public function GetFieldAlter() {
-
     }
 
     public function GetName() {
