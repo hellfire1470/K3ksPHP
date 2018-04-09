@@ -26,9 +26,7 @@
 
 namespace K3ksPHP\Database {
 
-    require_once __DIR__ . "/IDbRow.php";
-
-    class DbRow implements IDbRow {
+    class DbRow {
 
         private $_attr;
         private $_meta;
@@ -36,14 +34,6 @@ namespace K3ksPHP\Database {
         public function __construct($attr, $meta = null) {
             $this->_attr = $attr;
             $this->_meta = $meta;
-        }
-
-        public function Create() {
-
-        }
-
-        public function Delete() {
-
         }
 
         public function GetAttr($attr) {
@@ -57,36 +47,8 @@ namespace K3ksPHP\Database {
             return $this->_attr;
         }
 
-        public function GetMeta($meta = null) {
-
-        }
-
         public function HasAttr($attr) {
             return array_key_exists($attr, $this->_attr);
-        }
-
-        public function HasMeta($meta) {
-
-        }
-
-        public function IsLoaded() {
-
-        }
-
-        public function RemoveMeta($meta) {
-
-        }
-
-        public function Save() {
-
-        }
-
-        public function SetAttr($attr, $value = null) {
-
-        }
-
-        public function SetMeta($meta, $value = null) {
-
         }
 
     }

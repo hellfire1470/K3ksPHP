@@ -26,12 +26,11 @@
 
 namespace K3ksPHP\Database {
 
-    require_once __DIR__ . "/IDbTable.php";
     require_once __DIR__ . "/DbField.php";
 
-    class DbTable implements IDbTable {
+    class DbTable {
 
-        private static $TAG = "DBObj";
+        private static $TAG    = "DBObj";
         private $_tableName;
         private $_fields;
         private $_fieldsByName = [];
@@ -50,7 +49,7 @@ namespace K3ksPHP\Database {
                 throw new Exception("Error in " . static::$TAG . ": fields are empty");
             }
             $this->_tableName = $table_name;
-            $this->_fields = $fields;
+            $this->_fields    = $fields;
             foreach ($fields as $field) {
                 $this->_fieldsByName[$field->GetName()] = $field;
             }
@@ -93,30 +92,22 @@ namespace K3ksPHP\Database {
             return $this->_DataToRow($results);
         }
 
-        public function LoadAllByTag($tag, $value) {
-            $_tag = DbConnection::GetConnection()->real_escape_string($tag);
-            return $this->LoadAll($_tag . " = ?", $value);
+        public function LoadAllByColumns($columns, $values) {
+            $filter = '';
+            foreach ($columns as $column) {
+                $col    = DbConnection::GetConnection()->real_escape_string($column);
+                $filter .= $col . ' = ? AND';
+            }
+            return $this->LoadAll(rtrim($filter, 'AND'), $values);
         }
 
-        public function LoadAllByColumn($column, $key) {
+        public function LoadAllByColumn($column, $value) {
             $col = DbConnection::GetConnection()->real_escape_string($column);
-            return $this->LoadAll($col . " = ?", $key);
+            return $this->LoadAll($col . " = ?", $value);
         }
 
         public function LoadByID($value) {
             return new DbObjInstance($value);
-        }
-
-        public function LoadByMetaKey($key) {
-
-        }
-
-        public function LoadByTag($tag, $value) {
-
-        }
-
-        public function LoadByTags($keys) {
-
         }
 
         public function Create() {
@@ -153,7 +144,7 @@ namespace K3ksPHP\Database {
             $keys = [];
             $args = [];
             foreach ($key_values as $key_value) {
-                $key = $key_value->GetKey();
+                $key    = $key_value->GetKey();
                 $keys[] = $key;
                 $args[] = '?';
             }
