@@ -79,14 +79,14 @@ namespace K3ksPHP\Database {
 
             $stmt = $conn->prepare($sql);
 
-            $types  = [];
+            $types = [];
             $values = [];
 
             foreach ($params as $typeValue) {
                 if (!$typeValue instanceof DbTypeValue) {
                     throw new \Exception('Parameter has to be TypeOf DbTypeValue');
                 }
-                $types[]  = $typeValue->GetType();
+                $types[] = $typeValue->GetType();
                 $values[] = $typeValue->GetValue();
             }
 
@@ -100,9 +100,11 @@ namespace K3ksPHP\Database {
             return self::_GetResults($result);
         }
 
-        private static function _GetResults($stmt_result) {
-            $results = [];
+        private static function _GetResults(&$stmt_result) {
             if (!is_bool($stmt_result)) {
+
+                $results = [];
+
                 while ($myrow = $stmt_result->fetch_assoc()) {
                     array_push($results, $myrow);
                 }
@@ -111,7 +113,8 @@ namespace K3ksPHP\Database {
 
                 return $results;
             }
-            return $stmt_result;
+
+            return empty(DbConnection::GetConnection()->errno);
         }
 
     }
