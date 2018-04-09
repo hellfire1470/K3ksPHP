@@ -31,7 +31,7 @@ namespace K3ksPHP\Database {
 
     class DbTable implements IDbTable {
 
-        private static $TAG    = "DBObj";
+        private static $TAG = "DBObj";
         private $_tableName;
         private $_fields;
         private $_fieldsByName = [];
@@ -50,7 +50,7 @@ namespace K3ksPHP\Database {
                 throw new Exception("Error in " . static::$TAG . ": fields are empty");
             }
             $this->_tableName = $table_name;
-            $this->_fields    = $fields;
+            $this->_fields = $fields;
             foreach ($fields as $field) {
                 $this->_fieldsByName[$field->GetName()] = $field;
             }
@@ -141,10 +141,10 @@ namespace K3ksPHP\Database {
 
         /*
          * @param $key_value: array() of DbKeyValue
-         *
+         * @param $replace: replaces current values
          */
 
-        public function Set($key_values) {
+        public function Set($key_values, $replace = false) {
 
             if (!is_array($key_values)) {
                 $key_values = [$key_values];
@@ -153,14 +153,14 @@ namespace K3ksPHP\Database {
             $keys = [];
             $args = [];
             foreach ($key_values as $key_value) {
-                $key    = $key_value->GetKey();
+                $key = $key_value->GetKey();
                 $keys[] = $key;
                 $args[] = '?';
             }
 
-            $sql = "replace into " . $this->_tableName . " (" . join(',', $keys) . ") values( " . join(',', $args) . " )";
+            $sql = ($replace ? 'replace' : 'insert') . " into " . $this->_tableName . " (" . join(',', $keys) . ") values( " . join(',', $args) . " )";
 
-            DbConnection::ExecuteSQL($sql, $key_values);
+            return DbConnection::ExecuteSQL($sql, $key_values);
         }
 
     }
