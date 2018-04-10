@@ -68,7 +68,9 @@ class DbField {
         $createAttr = '';
         if ($this->_attributes != null) {
             foreach ($this->_attributes as $attr) {
-                $createAttr .= $attr . ' ';
+                if ($attr instanceof DbFieldAttribute) {
+                    $createAttr .= $attr . ' ';
+                }
             }
         }
         return $createAttr;
