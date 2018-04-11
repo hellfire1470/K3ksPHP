@@ -26,40 +26,47 @@
 
 namespace K3ksPHP\Database {
 
-    require_once __DIR__ . "/DbField.php";
+    require_once __DIR__ . "/Field.php";
 
-    class DbTable {
+    class Table {
 
-        private static $TAG    = "DBObj";
+        private static $TAG  = "Table";
         private $_tableName;
-        private $_fields;
-        private $_fieldsByName = [];
+        private $_creatables = [];
 
         /**
          *
          * @param String table_name Name of the table
-         * @param String field_id Name of Primary Key
-         * @return Array of DbFields
+         * @param Array of creatables
          */
-        public function __construct($table_name, $fields) {
+        public function __construct($table_name, $creatables) {
             if (empty($table_name)) {
                 throw new Exception("Error in " . static::$TAG . ": you have to use an unique table name");
             }
-            if (empty($fields)) {
+            if (empty($creatables)) {
                 throw new Exception("Error in " . static::$TAG . ": fields are empty");
             }
             $this->_tableName = $table_name;
-            $this->_fields    = $fields;
-            foreach ($fields as $field) {
-                $this->_fieldsByName[$field->GetName()] = $field;
+            foreach ($creatables as $creatable) {
+                $this->_creatables[$creatable->GetName()] = $creatable;
             }
         }
 
-        private function _JoinFields($seperator, $withTypes = false) {
+        private function _JoinFields($seperator) {
             $joined = '';
-            foreach ($this->_fields as $field) {
-                if ($field instanceof DbField) {
-                    $joined .= $field->GetName() . ' ' . ($withTypes ? $field->GetFieldCreate() : '') . $seperator;
+            foreach ($this->_creatables as $field) {
+                if ($field instanceof Field) {
+                    $joined .= $field->GetName() . $seperator;
+                }
+            }
+            return substr($joined, 0, strlen($joined) - 1);
+        }
+
+        private function _JoinCreate() {
+            $joined = '';
+            foreach ($this->_creatables as $iCreatable) {
+                if ($iCreatable instanceof ICreatable) {
+                    $joined .= $iCreatable->GetCreate() . ',';
                 }
             }
             return substr($joined, 0, strlen($joined) - 1);
@@ -85,24 +92,24 @@ namespace K3ksPHP\Database {
             }
             $dbParams = [];
             foreach ($params as $param) {
-                $dbParams[] = new DbTypeValue($param);
+                $dbParams[] = new TypeValue($param);
             }
 
-            $results = DbConnection::ExecuteSQL($sql, $dbParams);
+            $results = Connection::ExecuteSQL($sql, $dbParams);
             return $this->_DataToRow($results);
         }
 
         public function LoadAllByColumns($columns, $values) {
             $filter = '';
             foreach ($columns as $column) {
-                $col    = DbConnection::GetConnection()->real_escape_string($column);
+                $col    = Connection::GetConnection()->real_escape_string($column);
                 $filter .= $col . ' = ? AND';
             }
             return $this->LoadAll(rtrim($filter, 'AND'), $values);
         }
 
         public function LoadAllByColumn($column, $value) {
-            $col = DbConnection::GetConnection()->real_escape_string($column);
+            $col = Connection::GetConnection()->real_escape_string($column);
             return $this->LoadAll($col . " = ?", $value);
         }
 
@@ -111,15 +118,15 @@ namespace K3ksPHP\Database {
         }
 
         public function Create() {
-            $sql = 'create table if not exists ' . $this->_tableName . '(' . $this->_JoinFields(',', true) . ')';
-            DbConnection::ExecuteSQL($sql);
+            $sql = 'create table if not exists ' . $this->_tableName . '(' . $this->_JoinCreate() . ')';
+            Connection::ExecuteSQL($sql);
         }
 
         private function _DataToRow($data) {
             $instances = [];
 
             foreach ($data as $singleRow) {
-                $instance = new DbRow($singleRow);
+                $instance = new Row($singleRow);
                 array_push($instances, $instance);
             }
 
@@ -127,7 +134,7 @@ namespace K3ksPHP\Database {
         }
 
         public function GetFieldByKey($key) {
-            return $this->_fieldsByName[$key];
+            return $this->_creatables[$key];
         }
 
         /*
@@ -151,7 +158,7 @@ namespace K3ksPHP\Database {
 
             $sql = ($replace ? 'replace' : 'insert') . " into " . $this->_tableName . " (" . join(',', $keys) . ") values( " . join(',', $args) . " )";
 
-            return DbConnection::ExecuteSQL($sql, $key_values);
+            return Connection::ExecuteSQL($sql, $key_values);
         }
 
     }

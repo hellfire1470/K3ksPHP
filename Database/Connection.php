@@ -31,7 +31,7 @@
 
 namespace K3ksPHP\Database {
 
-    class DbConnection {
+    class Connection {
 
         private static $_sConnection;
 
@@ -50,7 +50,7 @@ namespace K3ksPHP\Database {
         }
 
         private static function _sInitialize() {
-            register_shutdown_function('K3ksPHP\Database\DbConnection::sDisconnect');
+            register_shutdown_function('K3ksPHP\Database\Connection::sDisconnect');
 
             self::$_sConnection = new \mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, MYSQL_PORT);
 
@@ -79,14 +79,14 @@ namespace K3ksPHP\Database {
 
             $stmt = $conn->prepare($sql);
 
-            $types = [];
+            $types  = [];
             $values = [];
 
             foreach ($params as $typeValue) {
-                if (!$typeValue instanceof DbTypeValue) {
+                if (!$typeValue instanceof TypeValue) {
                     throw new \Exception('Parameter has to be TypeOf DbTypeValue');
                 }
-                $types[] = $typeValue->GetType();
+                $types[]  = $typeValue->GetType();
                 $values[] = $typeValue->GetValue();
             }
 
@@ -114,7 +114,7 @@ namespace K3ksPHP\Database {
                 return $results;
             }
 
-            return empty(DbConnection::GetConnection()->errno);
+            return empty(Connection::GetConnection()->errno);
         }
 
     }

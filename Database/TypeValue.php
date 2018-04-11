@@ -27,23 +27,38 @@
 namespace K3ksPHP\Database;
 
 /**
- * Description of DbKeyValue
+ * Description of DBKeyValue
  *
  * @author Alexander
  */
-require_once __DIR__ . '/DbTypeValue.php';
+class TypeValue {
 
-class DbKeyValue extends DbTypeValue {
+    private $_type;
+    private $_value;
 
-    private $_key;
-
-    public function __construct($key, $value, $type = null) {
-        parent::__construct($value, $type);
-        $this->_key = $key;
+    //put your code here
+    public function __construct($value, $type = null) {
+        if ($type != null) {
+            $this->_type = $type;
+        } else {
+            // TODO: detect blobs
+            if (is_integer($value)) {
+                $this->_type = 'i';
+            } else if (is_double($value)) {
+                $this->_type = 'd';
+            } else {
+                $this->_type = 's';
+            }
+        }
+        $this->_value = $value;
     }
 
-    public function GetKey() {
-        return $this->_key;
+    public function GetType() {
+        return $this->_type;
+    }
+
+    public function GetValue() {
+        return $this->_value;
     }
 
 }

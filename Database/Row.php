@@ -26,7 +26,7 @@
 
 namespace K3ksPHP\Database {
 
-    class DbRow {
+    class Row {
 
         private $_attr;
         private $_meta;

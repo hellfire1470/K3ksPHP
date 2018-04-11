@@ -26,12 +26,14 @@
 
 namespace K3ksPHP\Database;
 
+require_once 'ICreatable.php';
+
 /**
  * Description of DbField
  *
  * @author Alexander
  */
-abstract class DbFieldType {
+abstract class FieldType {
 
     const INTEGER = 'INT';
     const VARCHAR = 'VARCHAR';
@@ -39,7 +41,7 @@ abstract class DbFieldType {
 
 }
 
-abstract class DbFieldAttribute {
+abstract class FieldAttribute {
 
     const UNIQUE         = 'UNIQUE';
     const PRIMARY_KEY    = 'PRIMARY KEY';
@@ -48,7 +50,7 @@ abstract class DbFieldAttribute {
 
 }
 
-class DbField {
+class Field implements ICreatable {
 
     private $_name;
     private $_type;
@@ -57,9 +59,9 @@ class DbField {
     private $_attributes;
 
     //put your code here
-    public function __construct($name, $dbFieldType, $size = null, $attributes = null) {
+    public function __construct($name, $fieldType, $size = null, $attributes = null) {
         $this->_name       = $name;
-        $this->_type       = $dbFieldType;
+        $this->_type       = $fieldType;
         $this->_size       = $size;
         $this->_attributes = !empty($attributes) ? $attributes : [];
     }
@@ -68,17 +70,15 @@ class DbField {
         $createAttr = '';
         if ($this->_attributes != null) {
             foreach ($this->_attributes as $attr) {
-                if ($attr instanceof DbFieldAttribute) {
-                    $createAttr .= $attr . ' ';
-                }
+                $createAttr .= $attr . ' ';
             }
         }
         return $createAttr;
     }
 
-    public function GetFieldCreate() {
-        $typestr = $this->_type;
-        if ($this->_type !== DbFieldType::TEXT) {
+    public function GetCreate() {
+        $typestr = $this->GetName() . ' ' . $this->_type;
+        if ($this->_type !== FieldType::TEXT) {
             $typestr .= '(' . $this->_size . ') ' . $this->_GetCreateAttributes();
         }
         return $typestr;
